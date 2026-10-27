@@ -47,4 +47,9 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    public function reportes()
+    {
+        return $this -> HasMany(Reportes::class);
+    }
 }
