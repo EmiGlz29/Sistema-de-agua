@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('usuario_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            $table->string('Ubicacion', 255);
-            $table->text('Descripcion')->default('');
-            $table->date('Fecha_inicio');
-            $table->date('Fecha_fin');
-            $table->string('Folio')->nullable();
+            $table->string('ubicacion', 255);
+            $table->text('descripcion')->default('');
+            $table->date('fecha_inicio');
+            $table->date('fecha_fin');
+            $table->string('folio')->nullable();
         });
     }
 

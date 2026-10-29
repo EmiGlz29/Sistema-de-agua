@@ -1,6 +1,14 @@
 <?php
 
 use App\Models\User;
+use App\Models\Reportes;
+
+test('report factory creates a report with a related user and valid dates', function () {
+    $reporte = Reportes::factory()->create();
+
+    expect($reporte->user)->toBeInstanceOf(User::class)
+        ->and($reporte->fecha_fin)->toBeGreaterThanOrEqual($reporte->fecha_inicio);
+});
 
 test('authenticated users can open the report creation form using its short URL', function () {
     $user = User::factory()->create();
@@ -65,4 +73,73 @@ test('authenticated users only see their own reports in the listing', function (
         ->assertSee('Colonia Centro')
         ->assertDontSee('REP-AJENO')
         ->assertDontSee('Colonia Norte');
+});
+
+test('report owners can view, edit, update, and delete their reports', function () {
+    $user = User::factory()->create();
+    $reporte = Reportes::factory()->for($user, 'user')->create();
+
+    expect((int) $reporte->usuario_id)->toBe((int) $user->id);
+
+    $this->actingAs($user)
+        ->get(route('reportes.show', $reporte))
+        ->assertOk();
+
+    $this->actingAs($user)
+        ->get(route('reportes.edit', $reporte))
+        ->assertOk();
+
+    $this->actingAs($user)
+        ->put(route('reportes.update', $reporte), [
+            'ubicacion' => 'Colonia Actualizada',
+            'descripcion' => 'Descripción actualizada',
+            'fecha_inicio' => '2026-10-01',
+            'fecha_fin' => '2026-10-20',
+            'folio' => 'REP-ACTUALIZADO',
+        ])
+        ->assertRedirect(route('reportes.index'));
+
+    $this->assertDatabaseHas('reportes', [
+        'id' => $reporte->id,
+        'ubicacion' => 'Colonia Actualizada',
+    ]);
+
+    $this->actingAs($user)
+        ->delete(route('reportes.destroy', $reporte))
+        ->assertRedirect(route('reportes.index'));
+
+    $this->assertDatabaseMissing('reportes', ['id' => $reporte->id]);
+});
+
+test('users cannot view, edit, update, or delete another users report', function () {
+    $owner = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $reporte = Reportes::factory()->for($owner, 'user')->create();
+
+    $this->actingAs($otherUser)
+        ->get(route('reportes.show', $reporte))
+        ->assertForbidden();
+
+    $this->actingAs($otherUser)
+        ->get(route('reportes.edit', $reporte))
+        ->assertForbidden();
+
+    $this->actingAs($otherUser)
+        ->put(route('reportes.update', $reporte), [
+            'ubicacion' => 'Ubicación no autorizada',
+            'descripcion' => '',
+            'fecha_inicio' => '2026-10-01',
+            'fecha_fin' => '2026-10-20',
+            'folio' => null,
+        ])
+        ->assertForbidden();
+
+    $this->actingAs($otherUser)
+        ->delete(route('reportes.destroy', $reporte))
+        ->assertForbidden();
+
+    $this->assertDatabaseHas('reportes', [
+        'id' => $reporte->id,
+        'usuario_id' => $owner->id,
+    ]);
 });

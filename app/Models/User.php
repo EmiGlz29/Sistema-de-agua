@@ -50,6 +50,6 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 
     public function reportes()
     {
-        return $this -> HasMany(Reportes::class);
+        return $this->hasMany(Reportes::class, 'usuario_id');
     }
 }
