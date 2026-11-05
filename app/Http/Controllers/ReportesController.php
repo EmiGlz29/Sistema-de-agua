@@ -92,7 +92,7 @@ class ReportesController extends Controller
         $validated = $request->validate([
             'ubicacion' => ['required', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
-            'fecha_inicio' => ['required', 'date'],
+            'fecha_inicio' => ['required', 'date', 'before_or_equal:today'],
             'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'folio' => ['nullable', 'string', 'max:255'],
         ]);

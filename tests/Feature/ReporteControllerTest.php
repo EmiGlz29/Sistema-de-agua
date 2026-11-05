@@ -53,6 +53,28 @@ test('usuario puede crear un nuevo reporte', function(){
     ]);
 });
 
+test('formulario de reporte valida la ubicación y el orden de las fechas', function () {
+    // Dado un usuario y el total actual de reportes
+    $user = User::factory()->create();
+    $reportesAntes = Reportes::count();
+
+    // Cuando envía una ubicación vacía y una fecha de fin anterior a la de inicio
+    $response = $this->actingAs($user)->post(route('reportes.store'), [
+        'ubicacion' => '',
+        'descripcion' => 'Reporte inválido',
+        'fecha_inicio' => '2026-10-01',
+        'fecha_fin' => '2026-09-30',
+        'folio' => 'REP-INVALIDO',
+    ]);
+
+    // Entonces recibe errores de validación y la base de datos no cambia
+    $response->assertSessionHasErrors([
+        'ubicacion',
+        'fecha_fin',
+    ]);
+    $this->assertDatabaseCount('reportes', $reportesAntes);
+});
+
 test('usuario puede ver un reporte específico', function () {
     // Dado un usuario y un reporte
     $user = User::factory()->create();
