@@ -14,13 +14,7 @@
             <p class="text-sm font-semibold uppercase tracking-wide text-teal-800">Actualización</p>
             <h1 class="mt-2 text-3xl font-semibold text-slate-950">Editar reporte</h1>
 
-            @if ($errors->any())
-                <ul class="mt-5 list-disc rounded-md border border-red-200 bg-red-50 px-4 py-3 pl-9 text-sm text-red-800">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            @endif
+            <x-errores-formulario />
 
             <form action="{{ route('reportes.update', $reporte) }}" method="POST" class="mt-8 space-y-5">
                 @csrf
