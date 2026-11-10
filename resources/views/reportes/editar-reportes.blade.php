@@ -12,7 +12,7 @@
 
         <div class="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <p class="text-sm font-semibold uppercase tracking-wide text-teal-800">Actualización</p>
-            <h1 class="mt-2 text-3xl font-semibold text-slate-950">Editar reporte</h1>
+            <x-titulo-pagina>Editar reporte</x-titulo-pagina>
 
             <x-errores-formulario />
 
